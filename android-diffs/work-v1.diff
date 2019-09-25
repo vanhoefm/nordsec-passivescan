@@ -1,0 +1,869 @@
+
+project device/lge/bullhead/
+diff --git a/wifi/WCNSS_qcom_cfg.ini b/wifi/WCNSS_qcom_cfg.ini
+index 437bcf1..d7203ea 100644
+--- a/wifi/WCNSS_qcom_cfg.ini
++++ b/wifi/WCNSS_qcom_cfg.ini
+@@ -394,10 +394,10 @@ gSetTxChainmask1x1=1
+ gSetRxChainmask1x1=1
+ 
+ # Scan Timing Parameters
+-# gPassiveMaxChannelTime=110
+-# gPassiveMinChannelTime=60
+-gActiveMaxChannelTime=40
+-gActiveMinChannelTime=20
++gPassiveMaxChannelTime=150
++gPassiveMinChannelTime=100
++gActiveMaxChannelTime=150
++gActiveMinChannelTime=100
+ 
+ #If set to 0, MCC is not allowed.
+ gEnableMCCMode=1
+@@ -674,7 +674,7 @@ gAllowDFSChannelRoam=1
+ 
+ # Enable or Disable Extended Scan (GScan)
+ # 1=Enable (default), 0=Disable
+-gExtScanEnable=1
++gExtScanEnable=0
+ 
+ # Enable or Disable NAN
+ # 1=Enable (default), 0=Disable
+@@ -683,7 +683,7 @@ gEnableNanSupport=1
+ g_use_otpmac=0
+ 
+ # Enable Active mode offload
+-gActiveModeOffload=1
++gActiveModeOffload=0
+ 
+ END
+ 
+
+project frameworks/base/
+diff --git a/api/current.txt b/api/current.txt
+index 8655d899580..dda4b150732 100644
+--- a/api/current.txt
++++ b/api/current.txt
+@@ -8797,6 +8797,8 @@ package android.content {
+     field public static final int FLAG_RECEIVER_REGISTERED_ONLY = 1073741824; // 0x40000000
+     field public static final int FLAG_RECEIVER_REPLACE_PENDING = 536870912; // 0x20000000
+     field public static final java.lang.String METADATA_DOCK_HOME = "android.dock_home";
++    field public static final java.lang.String PASSIVE_WIFI_MODE_CHANGED = "android.intent.action.PASSIVE_WIFI_MODE";
++    field public static final java.lang.String PASSIVE_WIFI_MODE_PRIORITY_CHANGED = "android.intent.action.PASSIVE_WIFI_MODE_PRIOR";
+     field public static final int URI_ALLOW_UNSAFE = 4; // 0x4
+     field public static final int URI_ANDROID_APP_SCHEME = 2; // 0x2
+     field public static final int URI_INTENT_SCHEME = 1; // 0x1
+@@ -32478,6 +32480,8 @@ package android.provider {
+     field public static final deprecated java.lang.String INSTALL_NON_MARKET_APPS = "install_non_market_apps";
+     field public static final java.lang.String MODE_RINGER = "mode_ringer";
+     field public static final java.lang.String NETWORK_PREFERENCE = "network_preference";
++    field public static final java.lang.String PASSIVE_MODE_ON = "passive_mode_on";
++    field public static final java.lang.String PASSIVE_MODE_PRIOR_ON = "passive_mode_prior_on";
+     field public static final java.lang.String RADIO_BLUETOOTH = "bluetooth";
+     field public static final java.lang.String RADIO_CELL = "cell";
+     field public static final java.lang.String RADIO_NFC = "nfc";
+@@ -32660,6 +32664,8 @@ package android.provider {
+     field public static final deprecated java.lang.String PARENTAL_CONTROL_ENABLED = "parental_control_enabled";
+     field public static final deprecated java.lang.String PARENTAL_CONTROL_LAST_UPDATE = "parental_control_last_update";
+     field public static final deprecated java.lang.String PARENTAL_CONTROL_REDIRECT_URL = "parental_control_redirect_url";
++    field public static final deprecated java.lang.String PASSIVE_MODE_ON = "passive_mode_on";
++    field public static final deprecated java.lang.String PASSIVE_MODE_PRIOR_ON = "passive_mode_prior_on";
+     field public static final deprecated java.lang.String RADIO_BLUETOOTH = "bluetooth";
+     field public static final deprecated java.lang.String RADIO_CELL = "cell";
+     field public static final deprecated java.lang.String RADIO_NFC = "nfc";
+diff --git a/api/system-current.txt b/api/system-current.txt
+index 0fe164a269c..6e46c7e8200 100644
+--- a/api/system-current.txt
++++ b/api/system-current.txt
+@@ -9148,6 +9148,8 @@ package android.content {
+     field public static final int FLAG_RECEIVER_REGISTERED_ONLY = 1073741824; // 0x40000000
+     field public static final int FLAG_RECEIVER_REPLACE_PENDING = 536870912; // 0x20000000
+     field public static final java.lang.String METADATA_DOCK_HOME = "android.dock_home";
++    field public static final java.lang.String PASSIVE_WIFI_MODE_CHANGED = "android.intent.action.PASSIVE_WIFI_MODE";
++    field public static final java.lang.String PASSIVE_WIFI_MODE_PRIORITY_CHANGED = "android.intent.action.PASSIVE_WIFI_MODE_PRIOR";
+     field public static final int URI_ALLOW_UNSAFE = 4; // 0x4
+     field public static final int URI_ANDROID_APP_SCHEME = 2; // 0x2
+     field public static final int URI_INTENT_SCHEME = 1; // 0x1
+@@ -35234,6 +35236,8 @@ package android.provider {
+     field public static final java.lang.String MODE_RINGER = "mode_ringer";
+     field public static final java.lang.String NETWORK_PREFERENCE = "network_preference";
+     field public static final java.lang.String OTA_DISABLE_AUTOMATIC_UPDATE = "ota_disable_automatic_update";
++    field public static final java.lang.String PASSIVE_MODE_ON = "passive_mode_on";
++    field public static final java.lang.String PASSIVE_MODE_PRIOR_ON = "passive_mode_prior_on";
+     field public static final java.lang.String RADIO_BLUETOOTH = "bluetooth";
+     field public static final java.lang.String RADIO_CELL = "cell";
+     field public static final java.lang.String RADIO_NFC = "nfc";
+@@ -35418,6 +35422,8 @@ package android.provider {
+     field public static final deprecated java.lang.String PARENTAL_CONTROL_ENABLED = "parental_control_enabled";
+     field public static final deprecated java.lang.String PARENTAL_CONTROL_LAST_UPDATE = "parental_control_last_update";
+     field public static final deprecated java.lang.String PARENTAL_CONTROL_REDIRECT_URL = "parental_control_redirect_url";
++    field public static final deprecated java.lang.String PASSIVE_MODE_ON = "passive_mode_on";
++    field public static final deprecated java.lang.String PASSIVE_MODE_PRIOR_ON = "passive_mode_prior_on";
+     field public static final deprecated java.lang.String RADIO_BLUETOOTH = "bluetooth";
+     field public static final deprecated java.lang.String RADIO_CELL = "cell";
+     field public static final deprecated java.lang.String RADIO_NFC = "nfc";
+diff --git a/api/test-current.txt b/api/test-current.txt
+index d74526b7215..1d131ec2473 100644
+--- a/api/test-current.txt
++++ b/api/test-current.txt
+@@ -8809,6 +8809,8 @@ package android.content {
+     field public static final int FLAG_RECEIVER_REGISTERED_ONLY = 1073741824; // 0x40000000
+     field public static final int FLAG_RECEIVER_REPLACE_PENDING = 536870912; // 0x20000000
+     field public static final java.lang.String METADATA_DOCK_HOME = "android.dock_home";
++    field public static final java.lang.String PASSIVE_WIFI_MODE_CHANGED = "android.intent.action.PASSIVE_WIFI_MODE";
++    field public static final java.lang.String PASSIVE_WIFI_MODE_PRIORITY_CHANGED = "android.intent.action.PASSIVE_WIFI_MODE_PRIOR";
+     field public static final int URI_ALLOW_UNSAFE = 4; // 0x4
+     field public static final int URI_ANDROID_APP_SCHEME = 2; // 0x2
+     field public static final int URI_INTENT_SCHEME = 1; // 0x1
+@@ -32556,6 +32558,8 @@ package android.provider {
+     field public static final deprecated java.lang.String INSTALL_NON_MARKET_APPS = "install_non_market_apps";
+     field public static final java.lang.String MODE_RINGER = "mode_ringer";
+     field public static final java.lang.String NETWORK_PREFERENCE = "network_preference";
++    field public static final java.lang.String PASSIVE_MODE_ON = "passive_mode_on";
++    field public static final java.lang.String PASSIVE_MODE_PRIOR_ON = "passive_mode_prior_on";
+     field public static final java.lang.String RADIO_BLUETOOTH = "bluetooth";
+     field public static final java.lang.String RADIO_CELL = "cell";
+     field public static final java.lang.String RADIO_NFC = "nfc";
+@@ -32740,6 +32744,8 @@ package android.provider {
+     field public static final deprecated java.lang.String PARENTAL_CONTROL_ENABLED = "parental_control_enabled";
+     field public static final deprecated java.lang.String PARENTAL_CONTROL_LAST_UPDATE = "parental_control_last_update";
+     field public static final deprecated java.lang.String PARENTAL_CONTROL_REDIRECT_URL = "parental_control_redirect_url";
++    field public static final deprecated java.lang.String PASSIVE_MODE_ON = "passive_mode_on";
++    field public static final deprecated java.lang.String PASSIVE_MODE_PRIOR_ON = "passive_mode_prior_on";
+     field public static final deprecated java.lang.String RADIO_BLUETOOTH = "bluetooth";
+     field public static final deprecated java.lang.String RADIO_CELL = "cell";
+     field public static final deprecated java.lang.String RADIO_NFC = "nfc";
+diff --git a/cmds/svc/src/com/android/commands/svc/WifiCommand.java b/cmds/svc/src/com/android/commands/svc/WifiCommand.java
+index 94214ff9694..21453e9688b 100644
+--- a/cmds/svc/src/com/android/commands/svc/WifiCommand.java
++++ b/cmds/svc/src/com/android/commands/svc/WifiCommand.java
+@@ -20,8 +20,12 @@ import android.os.ServiceManager;
+ import android.os.RemoteException;
+ import android.net.wifi.IWifiManager;
+ import android.content.Context;
++import android.util.Log;
+ 
+ public class WifiCommand extends Svc.Command {
++    
++    private static final String THESIS_TAG = "WifiCommand (thesis-out)";
++
+     public WifiCommand() {
+         super("wifi");
+     }
+@@ -38,8 +42,10 @@ public class WifiCommand extends Svc.Command {
+     }
+ 
+     public void run(String[] args) {
++
+         boolean validCommand = false;
+         if (args.length >= 2) {
++            Log.d(THESIS_TAG,": received command " + args[1]);
+             boolean flag = false;
+             if ("enable".equals(args[1])) {
+                 flag = true;
+diff --git a/core/java/android/content/Intent.java b/core/java/android/content/Intent.java
+index c6aaa48ddad..393ab5c06d0 100644
+--- a/core/java/android/content/Intent.java
++++ b/core/java/android/content/Intent.java
+@@ -2595,6 +2595,12 @@ public class Intent implements Parcelable, Cloneable {
+      */
+     @SdkConstant(SdkConstantType.BROADCAST_INTENT_ACTION)
+     public static final String ACTION_AIRPLANE_MODE_CHANGED = "android.intent.action.AIRPLANE_MODE";
++    
++    @SdkConstant(SdkConstantType.BROADCAST_INTENT_ACTION)
++    public static final String PASSIVE_WIFI_MODE_CHANGED = "android.intent.action.PASSIVE_WIFI_MODE";
++    
++    @SdkConstant(SdkConstantType.BROADCAST_INTENT_ACTION)
++    public static final String PASSIVE_WIFI_MODE_PRIORITY_CHANGED = "android.intent.action.PASSIVE_WIFI_MODE_PRIOR";
+ 
+     /**
+      * Broadcast Action: Some content providers have parts of their namespace
+diff --git a/core/java/android/provider/Settings.java b/core/java/android/provider/Settings.java
+index 8bb6942fb73..2477091e858 100755
+--- a/core/java/android/provider/Settings.java
++++ b/core/java/android/provider/Settings.java
+@@ -347,7 +347,6 @@ public final class Settings {
+      * Input: Nothing.
+      * <p>
+      * Output: Nothing.
+-
+      */
+     @SdkConstant(SdkConstantType.ACTIVITY_INTENT_ACTION)
+     public static final String ACTION_WIFI_SETTINGS =
+@@ -1825,6 +1824,8 @@ public final class Settings {
+ 
+             // these are moving directly from system to global
+             MOVED_TO_GLOBAL.add(Settings.Global.AIRPLANE_MODE_ON);
++            MOVED_TO_GLOBAL.add(Settings.Global.PASSIVE_MODE_ON);
++            MOVED_TO_GLOBAL.add(Settings.Global.PASSIVE_MODE_PRIOR_ON);
+             MOVED_TO_GLOBAL.add(Settings.Global.AIRPLANE_MODE_RADIOS);
+             MOVED_TO_GLOBAL.add(Settings.Global.AIRPLANE_MODE_TOGGLEABLE_RADIOS);
+             MOVED_TO_GLOBAL.add(Settings.Global.AUTO_TIME);
+@@ -2468,6 +2469,18 @@ public final class Settings {
+         @Deprecated
+         public static final String AIRPLANE_MODE_ON = Global.AIRPLANE_MODE_ON;
+ 
++        /**
++         * @deprecated Use {@link android.provider.Settings.Global#PASSIVE_MODE_ON} instead
++         */
++        @Deprecated
++        public static final String PASSIVE_MODE_ON = Global.PASSIVE_MODE_ON;
++
++                /**
++         * @deprecated Use {@link android.provider.Settings.Global#PASSIVE_MODE_PRIOR_ON} instead
++         */
++        @Deprecated
++        public static final String PASSIVE_MODE_PRIOR_ON = Global.PASSIVE_MODE_PRIOR_ON;
++
+         /**
+          * @deprecated Use {@link android.provider.Settings.Global#RADIO_BLUETOOTH} instead
+          */
+@@ -6680,6 +6693,16 @@ public final class Settings {
+          */
+         public static final String AIRPLANE_MODE_ON = "airplane_mode_on";
+ 
++        /**
++         * Whether Passive Mode is on.
++         */
++        public static final String PASSIVE_MODE_ON = "passive_mode_on";
++
++                /**
++         * Whether Passive Priority Mode is on.
++         */
++        public static final String PASSIVE_MODE_PRIOR_ON = "passive_mode_prior_on";
++
+         /**
+          * Whether Theater Mode is on.
+          * {@hide}
+diff --git a/core/res/AndroidManifest.xml b/core/res/AndroidManifest.xml
+index 430c6b6459a..e7bdea51122 100644
+--- a/core/res/AndroidManifest.xml
++++ b/core/res/AndroidManifest.xml
+@@ -26,6 +26,8 @@
+     <!-- ================================================ -->
+     <eat-comment />
+ 
++    <protected-broadcast android:name="android.intent.action.PASSIVE_WIFI_MODE" />
++    <protected-broadcast android:name="android.intent.action.PASSIVE_WIFI_MODE_PRIOR" />
+     <protected-broadcast android:name="android.intent.action.SCREEN_OFF" />
+     <protected-broadcast android:name="android.intent.action.SCREEN_ON" />
+     <protected-broadcast android:name="android.intent.action.USER_PRESENT" />
+diff --git a/packages/SettingsLib/src/com/android/settingslib/WirelessUtils.java b/packages/SettingsLib/src/com/android/settingslib/WirelessUtils.java
+index 0346a7715fd..3381025db13 100644
+--- a/packages/SettingsLib/src/com/android/settingslib/WirelessUtils.java
++++ b/packages/SettingsLib/src/com/android/settingslib/WirelessUtils.java
+@@ -34,4 +34,14 @@ public class WirelessUtils {
+                 Settings.Global.AIRPLANE_MODE_ON, 0) != 0;
+     }
+ 
++    public static boolean isPassiveModeOn(Context context) {
++        return Settings.Global.getInt(context.getContentResolver(),
++                Settings.Global.PASSIVE_MODE_ON, 0) != 0;
++    }
++
++    public static boolean isPriorModeOn(Context context) {
++        return Settings.Global.getInt(context.getContentResolver(),
++                Settings.Global.PASSIVE_MODE_PRIOR_ON, 0) != 0;
++    }
++
+ }
+
+project frameworks/opt/net/wifi/
+diff --git a/service/java/com/android/server/wifi/WifiMonitor.java b/service/java/com/android/server/wifi/WifiMonitor.java
+index 1f2b3971..24e1506c 100644
+--- a/service/java/com/android/server/wifi/WifiMonitor.java
++++ b/service/java/com/android/server/wifi/WifiMonitor.java
+@@ -594,6 +594,9 @@ public class WifiMonitor {
+         while (true) {
+             if (mWifiNative.connectToSupplicant()) {
+                 mConnected = true;
++                // ########### Thesis #############
++                mWifiNative.restorePassiveScanningMode();
++                // ################################
+                 new MonitorThread(mWifiNative.getLocalLog()).start();
+                 return true;
+             }
+diff --git a/service/java/com/android/server/wifi/WifiNative.java b/service/java/com/android/server/wifi/WifiNative.java
+index 13876f32..ecb20856 100644
+--- a/service/java/com/android/server/wifi/WifiNative.java
++++ b/service/java/com/android/server/wifi/WifiNative.java
+@@ -18,12 +18,7 @@ package com.android.server.wifi;
+ 
+ import android.annotation.NonNull;
+ import android.annotation.Nullable;
+-import android.app.AlarmManager;
+-import android.app.PendingIntent;
+-import android.content.BroadcastReceiver;
+ import android.content.Context;
+-import android.content.Intent;
+-import android.content.IntentFilter;
+ import android.net.apf.ApfCapabilities;
+ import android.net.wifi.RttManager;
+ import android.net.wifi.RttManager.ResponderConfig;
+@@ -82,6 +77,8 @@ import java.util.Objects;
+ import java.util.Set;
+ import java.util.TimeZone;
+ 
++import android.provider.Settings;
++
+ 
+ /**
+  * Native calls for bring up/shut down of the supplicant daemon and for
+@@ -93,7 +90,10 @@ import java.util.TimeZone;
+  * {@hide}
+  */
+ public class WifiNative {
+-    private static boolean DBG = false;
++    private static boolean DBG = true;
++
++    private static boolean passiveScanning = false;
++    private static boolean passiveScanningPrior = false;
+ 
+     // Must match wifi_hal.h
+     public static final int WIFI_SUCCESS = 0;
+@@ -150,7 +150,7 @@ public class WifiNative {
+     private WifiNative(String interfaceName,
+                        boolean requiresPrefix) {
+         mInterfaceName = interfaceName;
+-        mTAG = "WifiNative-" + interfaceName;
++        mTAG = "WifiNative (thesis)-" + interfaceName;
+ 
+         if (requiresPrefix) {
+             mInterfacePrefix = "IFNAME=" + interfaceName + " ";
+@@ -205,7 +205,11 @@ public class WifiNative {
+     private native static boolean startSupplicantNative(boolean p2pSupported);
+     public boolean startSupplicant(boolean p2pSupported) {
+         synchronized (sLock) {
+-            return startSupplicantNative(p2pSupported);
++            boolean returnVal = startSupplicantNative(p2pSupported);
++            // Nope, does not restore correctly
++            //Log.i(mTAG, "Restoring passive state to supplicant as " + passiveScanning);
++            //setPassiveScanningMode(passiveScanning);
++            return returnVal;
+         }
+     }
+ 
+@@ -331,6 +335,42 @@ public class WifiNative {
+         return (pong != null && pong.equals("PONG"));
+     }
+ 
++    // THESIS STUFF ################################################################################
++
++    public boolean setPassiveScanningMode(Boolean pass) {
++        Log.i(mTAG, "Sending new passive scanning state to supplicant: " + pass);
++        String reply;
++        if(pass) {
++            reply = doStringCommand("THESIS_PASS");
++        } else {
++            reply = doStringCommand("THESIS_ACT");
++        }
++        Log.i(mTAG,reply + " (thesis)");
++        return true;
++    }
++
++    public boolean setPassiveScanningPriorityMode(Boolean pass) {
++        Log.i(mTAG, "Sending new passive scanning priority mode to supplicant: " + pass);
++        String reply;
++        if(pass) {
++            reply = doStringCommand("THESIS_PRIOR");
++        } else {
++            reply = doStringCommand("THESIS_NONPRIOR");
++        }
++        Log.i(mTAG,reply + " (thesis)");
++        return true;
++    }
++
++    public void restorePassiveScanningMode() {
++        boolean prevState = Settings.Global.getInt(mContext.getContentResolver(), Settings.Global.PASSIVE_MODE_ON, 0) != 0;
++        boolean prevPriorState = Settings.Global.getInt(mContext.getContentResolver(), Settings.Global.PASSIVE_MODE_PRIOR_ON, 0) != 0;
++        Log.i(mTAG, "Restoring passive state to supplicant as " + prevState);
++        setPassiveScanningMode(prevState);
++        setPassiveScanningPriorityMode(prevPriorState);
++    }
++
++    // END OF THESIS STUFF #########################################################################
++
+     public void setSupplicantLogLevel(String level) {
+         doStringCommand("LOG_LEVEL " + level);
+     }
+@@ -1546,7 +1586,7 @@ public class WifiNative {
+         return sCmdId++;
+     }
+ 
+-    private static final String TAG = "WifiNative-HAL";
++    private static final String TAG = "WifiNative-HAL (thesis)";
+     private static long sWifiHalHandle = 0;             /* used by JNI to save wifi_handle */
+     private static long[] sWifiIfaceHandles = null;     /* used by JNI to save interface handles */
+     public static int sWlan0Index = -1;
+diff --git a/service/java/com/android/server/wifi/WifiServiceImpl.java b/service/java/com/android/server/wifi/WifiServiceImpl.java
+index 740ef6e5..5984a1a2 100644
+--- a/service/java/com/android/server/wifi/WifiServiceImpl.java
++++ b/service/java/com/android/server/wifi/WifiServiceImpl.java
+@@ -120,9 +120,9 @@ import java.util.List;
+  * @hide
+  */
+ public class WifiServiceImpl extends IWifiManager.Stub {
+-    private static final String TAG = "WifiService";
++    private static final String TAG = "WifiService (thesis-out-unsure)";
+     private static final boolean DBG = true;
+-    private static final boolean VDBG = false;
++    private static final boolean VDBG = true;
+     private static final String BOOT_DEFAULT_WIFI_COUNTRY_CODE = "ro.boot.wificountrycode";
+ 
+     final WifiStateMachine mWifiStateMachine;
+@@ -397,6 +397,36 @@ public class WifiServiceImpl extends IWifiManager.Stub {
+                 },
+                 new IntentFilter(TelephonyIntents.ACTION_SIM_STATE_CHANGED));
+ 
++        mContext.registerReceiver(
++                new BroadcastReceiver() {
++                    @Override
++                    public void onReceive(Context context, Intent intent) {
++                        Boolean pass = intent.getBooleanExtra("state",false);
++                        if (pass) {
++                            Log.i(TAG, "Enabling passive (thesis)");
++                        } else {
++                            Log.i(TAG, "Disabling passive (thesis)");
++                        }
++                        WifiNative.getWlanNativeInterface().setPassiveScanningMode(pass);
++                    }
++                },
++                new IntentFilter(Intent.PASSIVE_WIFI_MODE_CHANGED));
++
++        mContext.registerReceiver(
++                new BroadcastReceiver() {
++                    @Override
++                    public void onReceive(Context context, Intent intent) {
++                        Boolean pass = intent.getBooleanExtra("state",false);
++                        if (pass) {
++                            Log.i(TAG, "Enabling priority (thesis)");
++                        } else {
++                            Log.i(TAG, "Disabling priority (thesis)");
++                        }
++                        WifiNative.getWlanNativeInterface().setPassiveScanningPriorityMode(pass);
++                    }
++                },
++                new IntentFilter(Intent.PASSIVE_WIFI_MODE_PRIORITY_CHANGED));
++
+         // Adding optimizations of only receiving broadcasts when wifi is enabled
+         // can result in race conditions when apps toggle wifi in the background
+         // without active user involvement. Always receive broadcasts.
+
+project hardware/broadcom/wlan/
+diff --git a/bcmdhd/dhdutil/include/wlioctl.h b/bcmdhd/dhdutil/include/wlioctl.h
+index c6a2b41..3f19328 100644
+--- a/bcmdhd/dhdutil/include/wlioctl.h
++++ b/bcmdhd/dhdutil/include/wlioctl.h
+@@ -4300,8 +4300,8 @@ typedef struct wl_txrate_class {
+ 
+ 
+ /* Overlap BSS Scan parameters default, minimum, maximum */
+-#define WLC_OBSS_SCAN_PASSIVE_DWELL_DEFAULT		20	/* unit TU */
+-#define WLC_OBSS_SCAN_PASSIVE_DWELL_MIN			5	/* unit TU */
++#define WLC_OBSS_SCAN_PASSIVE_DWELL_DEFAULT		200	/* unit TU */
++#define WLC_OBSS_SCAN_PASSIVE_DWELL_MIN			100	/* unit TU */
+ #define WLC_OBSS_SCAN_PASSIVE_DWELL_MAX			1000	/* unit TU */
+ #define WLC_OBSS_SCAN_ACTIVE_DWELL_DEFAULT		10	/* unit TU */
+ #define WLC_OBSS_SCAN_ACTIVE_DWELL_MIN			10	/* unit TU */
+
+project hardware/qcom/wlan/
+diff --git a/qcwcn/wifi_hal/gscan.cpp b/qcwcn/wifi_hal/gscan.cpp
+index 5adba77..c8c85b1 100644
+--- a/qcwcn/wifi_hal/gscan.cpp
++++ b/qcwcn/wifi_hal/gscan.cpp
+@@ -15,7 +15,8 @@
+  */
+ 
+ #include "sync.h"
+-#define LOG_TAG  "WifiHAL"
++#define LOG_TAG  "WifiHAL (thesis-out-gscan)"
++#define LOG_NDEBUG 0 //added, see system/core/include/log/log.h
+ #include <utils/Log.h>
+ #include <time.h>
+ #include <errno.h>
+@@ -42,6 +43,8 @@ wifi_error initializeGscanHandlers(hal_info *info)
+ {
+     info->gscan_handlers = (gscan_event_handlers *)malloc(sizeof(gscan_event_handlers));
+     if (info->gscan_handlers) {
++        ALOGV("%s: Initialized gscan handlers",
++              __FUNCTION__);
+         memset(info->gscan_handlers, 0, sizeof(gscan_event_handlers));
+     }
+     else {
+
+project packages/apps/Settings/
+diff --git a/res/values-en-rIN/strings.xml b/res/values-en-rIN/strings.xml
+index d4c208d721..7ceb6fd244 100644
+--- a/res/values-en-rIN/strings.xml
++++ b/res/values-en-rIN/strings.xml
+@@ -638,6 +638,10 @@
+     <string name="nfc_quick_toggle_title" msgid="6769159366307299004">"NFC"</string>
+     <string name="nfc_quick_toggle_summary" product="tablet" msgid="8302974395787498915">"Allow data exchange when the tablet touches another device"</string>
+     <string name="nfc_quick_toggle_summary" product="default" msgid="5237208142892767592">"Allow data exchange when the phone touches another device"</string>
++    <string name="wifi_passive_toggle_title" msgid="6769159366307299005">"Passive WiFi scanning"</string>
++    <string name="wifi_passive_toggle_summary" msgid="5237208142892767593">"Enable or disable passive WiFi scanning, if the device supports it."</string>
++    <string name="wifi_passive_prior_toggle_title" msgid="6769159366307299006">"Passive WiFi scanning priority mode"</string>
++    <string name="wifi_passive_prior_toggle_summary" msgid="5237208142892767594">"Enable or disable priority mode for passive WiFi scanning."</string>
+     <string name="nfc_disclaimer_title" msgid="4364003873202264039">"Turn on NFC"</string>
+     <string name="nfc_disclaimer_content" msgid="5566907911915158075">"NFC exchanges data between this device and other nearby devices or targets, such as payment terminals, access readers and interactive ads or tags."</string>
+     <string name="android_beam_settings_title" msgid="7832812974600338649">"Android Beam"</string>
+diff --git a/res/xml/wifi_advanced_settings.xml b/res/xml/wifi_advanced_settings.xml
+index 8d9a6cd82c..93d2528045 100644
+--- a/res/xml/wifi_advanced_settings.xml
++++ b/res/xml/wifi_advanced_settings.xml
+@@ -37,4 +37,14 @@
+             android:title="@string/wifi_menu_wps_pin"
+             android:persistent="false" />
+ 
++    <SwitchPreference
++        android:key="toggle_wifi_passive"
++        android:title="@string/wifi_passive_toggle_title"
++        android:summary="@string/wifi_passive_toggle_summary" />
++
++    <SwitchPreference
++        android:key="toggle_wifi_passive_prior"
++        android:title="@string/wifi_passive_prior_toggle_title"
++        android:summary="@string/wifi_passive_prior_toggle_summary" />
++
+ </PreferenceScreen>
+diff --git a/src/com/android/settings/WirelessSettings.java b/src/com/android/settings/WirelessSettings.java
+index 7434e679f8..f29bef33fd 100644
+--- a/src/com/android/settings/WirelessSettings.java
++++ b/src/com/android/settings/WirelessSettings.java
+@@ -61,10 +61,12 @@ import java.util.Collections;
+ import java.util.List;
+ 
+ public class WirelessSettings extends SettingsPreferenceFragment implements Indexable {
+-    private static final String TAG = "WirelessSettings";
++    private static final String TAG = "WirelessSettings (thesis)";
+ 
+     private static final String KEY_TOGGLE_AIRPLANE = "toggle_airplane";
+     private static final String KEY_TOGGLE_NFC = "toggle_nfc";
++    private static final String KEY_TOGGLE_WIFI_PASSIVE = "toggle_wifi_passive";
++    private static final String KEY_TOGGLE_WIFI_PASSIVE_PRIOR = "toggle_wifi_passive_prior";
+     private static final String KEY_WIMAX_SETTINGS = "wimax_settings";
+     private static final String KEY_ANDROID_BEAM_SETTINGS = "android_beam_settings";
+     private static final String KEY_VPN_SETTINGS = "vpn_settings";
+diff --git a/src/com/android/settings/wifi/AdvancedWifiSettings.java b/src/com/android/settings/wifi/AdvancedWifiSettings.java
+index 6f23b4fa7c..ef3e4ed928 100644
+--- a/src/com/android/settings/wifi/AdvancedWifiSettings.java
++++ b/src/com/android/settings/wifi/AdvancedWifiSettings.java
+@@ -24,6 +24,7 @@ import android.net.wifi.WpsInfo;
+ import android.os.Bundle;
+ import android.os.UserManager;
+ import android.security.Credentials;
++import android.support.v14.preference.SwitchPreference;
+ import android.support.v7.preference.Preference;
+ import android.support.v7.preference.Preference.OnPreferenceClickListener;
+ import android.support.v7.preference.PreferenceScreen;
+@@ -32,6 +33,8 @@ import com.android.internal.logging.MetricsProto.MetricsEvent;
+ import com.android.settings.R;
+ import com.android.settings.RestrictedSettingsFragment;
+ import com.android.settingslib.RestrictedLockUtils;
++import com.android.settings.wifi.PassiveWifiEnabler;
++import com.android.settings.wifi.PassiveWifiPriorEnabler;
+ 
+ public class AdvancedWifiSettings extends RestrictedSettingsFragment {
+     private static final String TAG = "AdvancedWifiSettings";
+@@ -40,6 +43,14 @@ public class AdvancedWifiSettings extends RestrictedSettingsFragment {
+     private static final String KEY_WIFI_DIRECT = "wifi_direct";
+     private static final String KEY_WPS_PUSH = "wps_push_button";
+     private static final String KEY_WPS_PIN = "wps_pin_entry";
++    private static final String KEY_TOGGLE_WIFI_PASSIVE = "toggle_wifi_passive";
++    private static final String KEY_TOGGLE_WIFI_PASSIVE_PRIOR = "toggle_wifi_passive_prior";
++
++    private PassiveWifiEnabler mPassiveWifiEnabler;
++    private SwitchPreference mWifiPassivePreference;
++
++    private PassiveWifiPriorEnabler mPassiveWifiPriorEnabler;
++    private SwitchPreference mWifiPassivePriorPreference;
+ 
+     private boolean mUnavailable;
+ 
+@@ -61,6 +72,13 @@ public class AdvancedWifiSettings extends RestrictedSettingsFragment {
+         } else {
+             addPreferencesFromResource(R.xml.wifi_advanced_settings);
+         }
++
++        final Context context = getActivity();
++        mWifiPassivePreference = (SwitchPreference) findPreference(KEY_TOGGLE_WIFI_PASSIVE);
++        mPassiveWifiEnabler = new PassiveWifiEnabler(context, mWifiPassivePreference);
++
++        mWifiPassivePriorPreference = (SwitchPreference) findPreference(KEY_TOGGLE_WIFI_PASSIVE_PRIOR);
++        mPassiveWifiPriorEnabler = new PassiveWifiPriorEnabler(context, mWifiPassivePriorPreference);
+     }
+ 
+     @Override
+@@ -75,11 +93,20 @@ public class AdvancedWifiSettings extends RestrictedSettingsFragment {
+     @Override
+     public void onResume() {
+         super.onResume();
++        mPassiveWifiEnabler.resume();
++        mPassiveWifiPriorEnabler.resume();
+         if (!mUnavailable) {
+             initPreferences();
+         }
+     }
+ 
++    @Override
++    public void onPause() {
++        super.onPause();
++        mPassiveWifiEnabler.pause();
++        mPassiveWifiPriorEnabler.pause();
++    }
++
+     private void initPreferences() {
+         final Context context = getActivity();
+         Intent intent = new Intent(Credentials.INSTALL_AS_USER_ACTION);
+diff --git a/src/com/android/settings/wifi/PassiveWifiEnabler.java b/src/com/android/settings/wifi/PassiveWifiEnabler.java
+new file mode 100644
+index 0000000000..e80121a402
+--- /dev/null
++++ b/src/com/android/settings/wifi/PassiveWifiEnabler.java
+@@ -0,0 +1,129 @@
++/*
++ * Copyright (C) 2007 The Android Open Source Project
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *      http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
++package com.android.settings.wifi;
++
++import android.content.Context;
++import android.content.Intent;
++import android.database.ContentObserver;
++import android.os.Handler;
++import android.os.Message;
++import android.os.SystemProperties;
++import android.os.UserHandle;
++import android.provider.Settings;
++import android.support.v14.preference.SwitchPreference;
++import android.support.v7.preference.Preference;
++
++import com.android.internal.logging.MetricsLogger;
++import com.android.internal.logging.MetricsProto.MetricsEvent;
++import com.android.internal.telephony.PhoneStateIntentReceiver;
++import com.android.internal.telephony.TelephonyProperties;
++import com.android.settingslib.WirelessUtils;
++
++import android.util.Log;
++
++public class PassiveWifiEnabler implements Preference.OnPreferenceChangeListener {
++
++    private static final String TAG = "PassiveWifiEnabler (thesis)";
++
++    private final Context mContext;
++
++    //private PhoneStateIntentReceiver mPhoneStateReceiver;
++    
++    private final SwitchPreference mSwitchPref;
++
++    // private static final int EVENT_SERVICE_STATE_CHANGED = 3;
++
++    // private Handler mHandler = new Handler() {
++    //     @Override
++    //     public void handleMessage(Message msg) {
++    //         switch (msg.what) {
++    //             case EVENT_SERVICE_STATE_CHANGED:
++    //                 onAirplaneModeChanged();
++    //                 break;
++    //         }
++    //     }
++    // };
++
++    private ContentObserver mPassiveModeObserver = new ContentObserver(new Handler()) {
++        @Override
++        public void onChange(boolean selfChange) {
++            onScanModeChanged();
++        }
++    };
++
++    public PassiveWifiEnabler(Context context, SwitchPreference passiveModeSwitchPreference) {
++        
++        mContext = context;
++        mSwitchPref = passiveModeSwitchPreference;
++
++        passiveModeSwitchPreference.setPersistent(false);
++    
++        //mPhoneStateReceiver = new PhoneStateIntentReceiver(mContext, mHandler);
++        //mPhoneStateReceiver.notifyServiceState(EVENT_SERVICE_STATE_CHANGED);
++    }
++
++    public void resume() {
++        
++        mSwitchPref.setChecked(WirelessUtils.isPassiveModeOn(mContext));
++
++        mSwitchPref.setOnPreferenceChangeListener(this);
++        mContext.getContentResolver().registerContentObserver(
++                Settings.Global.getUriFor(Settings.Global.PASSIVE_MODE_ON), true,
++                mPassiveModeObserver);
++    }
++    
++    public void pause() {
++        mSwitchPref.setOnPreferenceChangeListener(null);
++        mContext.getContentResolver().unregisterContentObserver(mPassiveModeObserver);
++    }
++
++    private void setPassiveModeOn(boolean enabling) {
++        Log.d(TAG, "Setting Passive mode to " + enabling);
++        // Change the system setting
++        Settings.Global.putInt(mContext.getContentResolver(), Settings.Global.PASSIVE_MODE_ON, 
++                                enabling ? 1 : 0);
++        // Update the UI to reflect system setting
++        mSwitchPref.setChecked(enabling);
++        
++        // Post the intent
++        Intent intent = new Intent(Intent.PASSIVE_WIFI_MODE_CHANGED);
++        intent.putExtra("state", enabling);
++        mContext.sendBroadcastAsUser(intent, UserHandle.ALL);
++    }
++
++    /**
++     * Called when we've received confirmation that the airplane mode was set.
++     * TODO: We update the checkbox summary when we get notified
++     * that mobile radio is powered up/down. We should not have dependency
++     * on one radio alone. We need to do the following:
++     * - handle the case of wifi/bluetooth failures
++     * - mobile does not send failure notification, fail on timeout.
++     */
++    private void onScanModeChanged() {
++        mSwitchPref.setChecked(WirelessUtils.isPassiveModeOn(mContext));
++    }
++    
++    /**
++     * Called when someone clicks on the checkbox preference.
++     */
++    public boolean onPreferenceChange(Preference preference, Object newValue) {
++        Boolean value = (Boolean) newValue;
++        setPassiveModeOn(value);
++        return true;
++    }
++
++}
+diff --git a/src/com/android/settings/wifi/PassiveWifiPriorEnabler.java b/src/com/android/settings/wifi/PassiveWifiPriorEnabler.java
+new file mode 100644
+index 0000000000..e39dc059cd
+--- /dev/null
++++ b/src/com/android/settings/wifi/PassiveWifiPriorEnabler.java
+@@ -0,0 +1,112 @@
++/*
++ * Copyright (C) 2007 The Android Open Source Project
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *      http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
++package com.android.settings.wifi;
++
++import android.content.Context;
++import android.content.Intent;
++import android.database.ContentObserver;
++import android.os.Handler;
++import android.os.Message;
++import android.os.SystemProperties;
++import android.os.UserHandle;
++import android.provider.Settings;
++import android.support.v14.preference.SwitchPreference;
++import android.support.v7.preference.Preference;
++
++import com.android.internal.logging.MetricsLogger;
++import com.android.internal.logging.MetricsProto.MetricsEvent;
++import com.android.internal.telephony.PhoneStateIntentReceiver;
++import com.android.internal.telephony.TelephonyProperties;
++import com.android.settingslib.WirelessUtils;
++
++import android.util.Log;
++
++public class PassiveWifiPriorEnabler implements Preference.OnPreferenceChangeListener {
++
++    private static final String TAG = "PassiveWifiPriorEnabler (thesis)";
++
++    private final Context mContext;
++    
++    private final SwitchPreference mSwitchPref;
++
++
++    private ContentObserver mPriorModeObserver = new ContentObserver(new Handler()) {
++        @Override
++        public void onChange(boolean selfChange) {
++            onPriorModeChanged();
++        }
++    };
++
++    public PassiveWifiPriorEnabler(Context context, SwitchPreference priorModeSwitchPreference) {
++        
++        mContext = context;
++        mSwitchPref = priorModeSwitchPreference;
++
++        priorModeSwitchPreference.setPersistent(false);
++    }
++
++    public void resume() {
++        
++        mSwitchPref.setChecked(WirelessUtils.isPriorModeOn(mContext));
++
++        mSwitchPref.setOnPreferenceChangeListener(this);
++        mContext.getContentResolver().registerContentObserver(
++                Settings.Global.getUriFor(Settings.Global.PASSIVE_MODE_PRIOR_ON), true,
++                mPriorModeObserver);
++    }
++    
++    public void pause() {
++        mSwitchPref.setOnPreferenceChangeListener(null);
++        mContext.getContentResolver().unregisterContentObserver(mPriorModeObserver);
++    }
++
++    private void setPriorModeOn(boolean enabling) {
++        Log.d(TAG, "Setting Priority mode to " + enabling);
++        // Change the system setting
++        Settings.Global.putInt(mContext.getContentResolver(), Settings.Global.PASSIVE_MODE_PRIOR_ON, 
++                                enabling ? 1 : 0);
++        // Update the UI to reflect system setting
++        mSwitchPref.setChecked(enabling);
++        
++        // Post the intent
++        Intent intent = new Intent(Intent.PASSIVE_WIFI_MODE_PRIORITY_CHANGED);
++        intent.putExtra("state", enabling);
++        mContext.sendBroadcastAsUser(intent, UserHandle.ALL);
++    }
++
++    /**
++     * Called when we've received confirmation that the airplane mode was set.
++     * TODO: We update the checkbox summary when we get notified
++     * that mobile radio is powered up/down. We should not have dependency
++     * on one radio alone. We need to do the following:
++     * - handle the case of wifi/bluetooth failures
++     * - mobile does not send failure notification, fail on timeout.
++     */
++    private void onPriorModeChanged() {
++        mSwitchPref.setChecked(WirelessUtils.isPriorModeOn(mContext));
++    }
++    
++    /**
++     * Called when someone clicks on the checkbox preference.
++     */
++    public boolean onPreferenceChange(Preference preference, Object newValue) {
++        Boolean value = (Boolean) newValue;
++        setPriorModeOn(value);
++        return true;
++    }
++
++}
